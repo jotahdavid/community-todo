@@ -33,8 +33,10 @@ export default async function Home() {
           </div>
         </header>
 
-        <footer className="mt-4">
-          <img src="#" alt="Logo" />
+        <footer className="mt-4 flex justify-center">
+          <a href="https://studiomodus.com.br" target="_blank">
+            <img src="/logo.webp" alt="Logo do StudioModus" title="Studio Modus" />
+          </a>
         </footer>
       </aside>
 
