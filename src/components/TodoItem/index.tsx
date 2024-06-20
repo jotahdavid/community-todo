@@ -1,8 +1,11 @@
-import { CheckIcon } from "@/components/Icons/CheckIcon";
+import { CheckIcon } from '@/components/Icons/CheckIcon';
+import { Todo } from '@/repositories/TodoRepository';
 
-interface TodoItemProps {}
+interface TodoItemProps {
+  todo: Todo;
+}
 
-export function TodoItem({}: TodoItemProps) {
+export function TodoItem({ todo }: TodoItemProps) {
   return (
     <div className="flex bg-green-950 w-full text-white rounded-sm p-5">
       <div className="flex-1">
@@ -11,16 +14,16 @@ export function TodoItem({}: TodoItemProps) {
             <button className="size-4 mr-2 fill-white">
               <CheckIcon />
             </button>
-            Postes de luz que ligam automático na vila
+            {todo.title}
           </p>
 
-          <span className="text-green-400">* Criada por &quot;username&quot;</span>
+          <span className="text-green-400">* Criada por &quot;{todo.createdBy}&quot;</span>
         </div>
 
         <ul className="flex gap-4">
-          {['Construção', 'Automação'].map((categoryName) => (
-            <li key={categoryName} className="bg-green-400 rounded-sm p-1">
-              # {categoryName}
+          {todo.categories.map((category) => (
+            <li key={category.id} className="bg-green-400 rounded-sm p-1">
+              # {category.name}
             </li>
           ))}
         </ul>
@@ -35,14 +38,14 @@ export function TodoItem({}: TodoItemProps) {
               +
             </button>
           </li>
-          {['lreporta', 'VenomExtreme', 'Monerk'].map((minecraftUsername, index) => (
-            <li key={minecraftUsername} className="-ml-1">
+          {todo.users.map((user, index) => (
+            <li key={user} className="-ml-1">
               <img
                 className="size-9 relative shadow-[2px_0_3.5px_rgb(0_0_0_/_50%)]"
                 style={{ zIndex: 10 - index }}
-                src={`https://mineskin.eu/helm/${minecraftUsername}`}
-                alt={`Avatar ${minecraftUsername}`}
-                title={minecraftUsername}
+                src={`https://mineskin.eu/helm/${user}`}
+                alt={`Avatar ${user}`}
+                title={user}
               />
             </li>
           ))}

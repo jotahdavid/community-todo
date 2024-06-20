@@ -1,6 +1,12 @@
-import { TodoItem } from "@/components/TodoItem";
+import { TodoItem } from '@/components/TodoItem';
+import TodoRepository from '@/repositories/TodoRepository';
 
-export default function Home() {
+export default async function Home() {
+  const todos = await TodoRepository.getAll();
+
+  const pendingTodos = todos.filter((todo) => !todo.completed);
+  const completedTodos = todos.filter((todo) => todo.completed);
+
   return (
     <div className="h-[100vh] text-white flex overflow-hidden">
       <aside className="h-full bg-green-950 px-16 py-14 max-w-[420px] flex flex-col justify-between">
@@ -46,15 +52,11 @@ export default function Home() {
           <h2 className="text-2xl mb-7">A fazer</h2>
 
           <ul className="space-y-4 flex-1">
-            <li>
-              <TodoItem />
-            </li>
-            <li>
-              <TodoItem />
-            </li>
-            <li>
-              <TodoItem />
-            </li>
+            {pendingTodos.map((pendingTodo) => (
+              <li key={pendingTodo.id}>
+                <TodoItem todo={pendingTodo} />
+              </li>
+            ))}
           </ul>
 
           <hr className="mt-8 mb-4" />
@@ -62,12 +64,11 @@ export default function Home() {
           <h2 className="text-2xl mb-7">Concluido</h2>
 
           <ul className="space-y-4 pb-14">
-            <li>
-              <TodoItem />
-            </li>
-            <li>
-              <TodoItem />
-            </li>
+            {completedTodos.map((completedTodo) => (
+              <li key={completedTodo.id}>
+                <TodoItem todo={completedTodo} />
+              </li>
+            ))}
           </ul>
         </div>
       </main>
