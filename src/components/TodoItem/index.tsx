@@ -1,5 +1,6 @@
 import { CheckIcon } from '@/components/Icons/CheckIcon';
 import { Todo } from '@/repositories/TodoRepository';
+import { cn } from '@/utils/cn';
 
 interface TodoItemProps {
   todo: Todo;
@@ -7,17 +8,26 @@ interface TodoItemProps {
 
 export function TodoItem({ todo }: TodoItemProps) {
   return (
-    <div className="flex bg-green-950 w-full text-white rounded-sm p-5">
+    <div
+      className={cn(
+        'flex w-full text-white rounded-sm p-5',
+        { 'bg-green-dark': !todo.completed, 'bg-[#4F7C3B]': todo.completed },
+      )}
+    >
       <div className="flex-1">
         <div className="mb-4">
           <p className="text-lg flex items-center">
             <button className="size-4 mr-2 fill-white">
-              <CheckIcon />
+              <CheckIcon fill={todo.completed} />
             </button>
-            {todo.title}
+            <span className={cn({ 'line-through': todo.completed })}>
+              {todo.title}
+            </span>
           </p>
 
-          <span className="text-green-400">* Criada por &quot;{todo.createdBy}&quot;</span>
+          <span className="text-green-400">
+            * Criada por &quot;{todo.createdBy}&quot;
+          </span>
         </div>
 
         <ul className="flex gap-4">
@@ -30,14 +40,18 @@ export function TodoItem({ todo }: TodoItemProps) {
       </div>
 
       <div className="flex flex-col justify-between">
-        <strong className="text-base">Estão ajudando:</strong>
+        <strong className="text-base text-right">
+          {todo.completed ? 'Ajudaram:' : 'Estão ajudando:'}
+        </strong>
 
         <ul className="flex justify-end">
-          <li>
-            <button className="bg-green-400 size-9 text-3xl leading-none flex items-center justify-center z-20 relative shadow-[2px_0_3.5px_rgb(0_0_0_/_50%)]">
-              +
-            </button>
-          </li>
+          {!todo.completed && (
+            <li>
+              <button className="bg-green-400 size-9 text-3xl leading-none flex items-center justify-center z-20 relative shadow-[2px_0_3.5px_rgb(0_0_0_/_50%)]">
+                +
+              </button>
+            </li>
+          )}
           {todo.users.map((user, index) => (
             <li key={user} className="-ml-1">
               <img

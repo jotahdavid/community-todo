@@ -9,7 +9,7 @@ export default async function Home() {
 
   return (
     <div className="h-[100vh] text-white flex overflow-hidden">
-      <aside className="h-full bg-green-950 px-16 py-14 max-w-[420px] flex flex-col justify-between">
+      <aside className="h-full bg-green-dark px-16 py-14 max-w-[420px] flex flex-col justify-between">
         <header>
           <h1 className="text-5xl mb-20">ServerdeMine</h1>
 
@@ -41,15 +41,15 @@ export default async function Home() {
         </footer>
       </aside>
 
-      <main className="h-full w-full bg-green-300 bg-[url('/minepattern.png')] overflow-y-auto">
+      <main className="h-full w-full bg-[#6aa84f] bg-[url('/minepattern.png')] overflow-y-auto">
         <div className="h-full p-14 flex flex-col">
-          <button className="w-fit bg-green-950 py-2 px-8 rounded-sm hover:bg-green-900 transition-colors">
+          <button className="w-fit bg-green-dark py-2 px-8 rounded-sm hover:bg-green-900 transition-colors">
             Nova tarefa
           </button>
 
           <hr className="mt-8 mb-4" />
 
-          <h2 className="text-2xl mb-7">A fazer</h2>
+          <h2 className="text-2xl mb-7 font-bold">A fazer</h2>
 
           <ul className="space-y-4 flex-1">
             {pendingTodos.map((pendingTodo) => (
@@ -61,7 +61,7 @@ export default async function Home() {
 
           <hr className="mt-8 mb-4" />
 
-          <h2 className="text-2xl mb-7">Concluido</h2>
+          <h2 className="text-2xl mb-7 font-bold">Concluido</h2>
 
           <ul className="space-y-4 pb-14">
             {completedTodos.map((completedTodo) => (
