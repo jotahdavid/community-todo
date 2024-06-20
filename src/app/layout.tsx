@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body className={cn(raleway.className, vt323.variable, 'h-full min-h-[100vh]')}>{children}</body>
     </html>
   );
