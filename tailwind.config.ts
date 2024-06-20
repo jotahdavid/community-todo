@@ -12,6 +12,9 @@ const config: Config = {
         'green-dark': '#223622',
         'green-light': '#7BC35C',
       },
+      fontFamily: {
+        'vt323': 'var(--font-vt323)',
+      },
     },
   },
   plugins: [],

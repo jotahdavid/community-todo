@@ -22,8 +22,10 @@ class TodoRepository {
         title: 'Tarefa 1',
         createdBy: 'Fulano',
         completed: false,
-        categories: [],
-        users: [],
+        categories: [
+          { id: randomUUID(), name: 'Automação' }
+        ],
+        users: ['Monerk'],
       },
       {
         id: randomUUID(),

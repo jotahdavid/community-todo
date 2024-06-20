@@ -9,17 +9,16 @@ export default async function Home() {
 
   return (
     <div className="h-[100vh] text-white flex overflow-hidden">
-      <aside className="h-full bg-green-dark px-16 py-14 max-w-[420px] flex flex-col justify-between">
+      <aside className="h-full bg-green-dark px-16 py-14 w-full max-w-[390px] flex flex-col justify-between overflow-y-auto">
         <header>
-          <h1 className="text-5xl mb-20">ServerdeMine</h1>
+          <h1 className="text-5xl mb-20 font-vt323 uppercase text-center">ServerdeMine</h1>
 
           <div className="flex flex-col gap-y-5 mb-10 pb-10 border-b">
-            <a className="text-2xl" href="#">
-              Documentação
-            </a>
-            <a className="text-2xl" href="#">
-              Documentação
-            </a>
+            {['Documentação', 'Tutorial'].map((anchor) => (
+              <a key={anchor} className="text-2xl hover:underline underline-offset-2" href="#">
+                {anchor}
+              </a>
+            ))}
           </div>
 
           <div>
@@ -27,7 +26,7 @@ export default async function Home() {
             <ul className="space-y-5">
               {['Construção', 'Exploração', 'Automação'].map((categoryName) => (
                 <li key={categoryName}>
-                  <a href="#">
+                  <a className="font-vt323 text-2xl hover:underline underline-offset-2" href="#">
                     # {categoryName}
                   </a>
                 </li>
@@ -36,14 +35,14 @@ export default async function Home() {
           </div>
         </header>
 
-        <footer>
+        <footer className="mt-4">
           <img src="#" alt="Logo" />
         </footer>
       </aside>
 
       <main className="h-full w-full bg-[#6aa84f] bg-[url('/minepattern.png')] overflow-y-auto">
         <div className="h-full p-14 flex flex-col">
-          <button className="w-fit bg-green-dark py-2 px-8 rounded-sm hover:bg-green-900 transition-colors">
+          <button className="font-vt323 w-fit bg-green-dark py-2 px-8 rounded-sm hover:bg-green-900 transition-colors">
             Nova tarefa
           </button>
 
