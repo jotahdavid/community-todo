@@ -14,11 +14,9 @@ export default async function Home() {
           <h1 className="text-5xl mb-20 font-vt323 uppercase text-center">ServerdeMine</h1>
 
           <div className="flex flex-col gap-y-5 mb-10 pb-10 border-b">
-            {['Documentação', 'Tutorial'].map((anchor) => (
-              <a key={anchor} className="text-2xl hover:underline underline-offset-2" href="#">
-                {anchor}
-              </a>
-            ))}
+            <a className="text-2xl hover:underline underline-offset-2" href={process.env.NEXT_PUBLIC_DOC_URL}>
+              Documentação
+            </a>
           </div>
 
           <div>
