@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Task {
+  id          Int     @id @default(autoincrement())
+  title       String  @db.VarChar(250)
+  description String? @db.Text
+  completed   Boolean @db.Boolean
+
+  categories CategoriesOnTask[]
+  assigns    AssignsOnTask[]
+
+  author   Player @relation(fields: [authorId], references: [id])
+  authorId Int    @map("author_id")
+
+  createdAt DateTime @map("created_at") @db.Timestamp()
+  updatedAt DateTime @map("updated_at") @db.Timestamp()
+
+  @@map("tasks")
+}
+
+model Player {
+  id            Int             @id @default(autoincrement())
+  name          String          @db.VarChar(32)
+  tasks         Task[]
+  AssignsOnTask AssignsOnTask[]
+
+  @@map("players")
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(250)
+
+  tasks CategoriesOnTask[]
+
+  @@map("categories")
+}
+
+model CategoriesOnTask {
+  Category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int      @map("category_id")
+
+  task   Task @relation(fields: [taskId], references: [id])
+  taskId Int  @map("task_id")
+
+  @@id([categoryId, taskId])
+  @@map("category_task")
+}
+
+model AssignsOnTask {
+  player   Player @relation(fields: [playerId], references: [id])
+  playerId Int    @map("player_id")
+
+  task   Task @relation(fields: [taskId], references: [id])
+  taskId Int  @map("task_id")
+
+  @@id([playerId, taskId])
+  @@map("player_task")
+}
