@@ -20,6 +20,9 @@ class TaskRepository {
         author: true,
         categories: true,
       },
+      orderBy: {
+        createdAt: 'asc',
+      },
     });
   }
 
