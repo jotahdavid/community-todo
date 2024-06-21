@@ -17,7 +17,6 @@ async function toggleTaskStatus(taskId: number) {
   if (!task) return;
 
   return TaskRepository.update(task.id, {
-    ...task,
     completed: !task.completed,
   });
 }

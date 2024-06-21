@@ -68,7 +68,7 @@ class TaskRepository {
     });
   }
 
-  async update(taskId: number, updatedTask: UpdateTaskDTO) {
+  async update(taskId: number, updatedTask: Partial<UpdateTaskDTO>) {
     return prisma.task.update({
       where: {
         id: taskId,
