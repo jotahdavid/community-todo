@@ -27,7 +27,7 @@ model Task {
 
 model Player {
   id            Int             @id @default(autoincrement())
-  name          String          @db.VarChar(250)
+  name          String          @db.VarChar(32)
   tasks         Task[]
   AssignsOnTask AssignsOnTask[]
 
