@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { AddUsernameModal } from '@/components/Modal/AddUsernameModal';
 import { TodoItem } from '@/components/TodoItem';
 import { Todo } from '@/repositories/TodoRepository';
+import { CreateTaskModal } from '@/components/Modal/CreateTaskModal';
 
 interface ClientComponentProps {
   completedTodos: Todo[];
@@ -17,18 +18,23 @@ const LOCAL_STORAGE_KEYS = {
 
 export function ClientComponent({ completedTodos, pendingTodos }: ClientComponentProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddUsernameModalOpen, setIsAddUsernameModalOpen] = useState(false);
+  const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 
   useEffect(() => {
     const nickname = localStorage.getItem(LOCAL_STORAGE_KEYS.MINECRAFT_NICKNAME);
-    setIsModalOpen(!nickname);
+    setIsAddUsernameModalOpen(!nickname);
     setIsLoading(false);
   }, []);
 
   const handleAddUsernameSubmit = useCallback(async (nickname: string) => {
     localStorage.setItem(LOCAL_STORAGE_KEYS.MINECRAFT_NICKNAME, nickname);
-    setIsModalOpen(false);
+    setIsAddUsernameModalOpen(false);
   }, []);
+
+  function handleNewTaskClick() {
+    setIsCreateTaskModalOpen(true);
+  }
 
   if (isLoading) {
     // TODO: adicionar componente Loader/Spinner
@@ -37,7 +43,9 @@ export function ClientComponent({ completedTodos, pendingTodos }: ClientComponen
 
   return (
     <>
-      {isModalOpen && <AddUsernameModal onSubmit={handleAddUsernameSubmit} />}
+      {isAddUsernameModalOpen && <AddUsernameModal onSubmit={handleAddUsernameSubmit} />}
+
+      {isCreateTaskModalOpen && <CreateTaskModal />}
 
       <aside className="h-full bg-green-dark px-16 py-14 w-full max-w-[390px] flex flex-col justify-between overflow-y-auto">
         <header>
@@ -72,7 +80,10 @@ export function ClientComponent({ completedTodos, pendingTodos }: ClientComponen
 
       <main className="h-full w-full bg-[#6aa84f] bg-[url('/minepattern.png')] overflow-y-auto">
         <div className="h-full p-14 flex flex-col">
-          <button className="font-vt323 w-fit bg-green-dark py-2 px-8 rounded-sm hover:bg-green-900 transition-colors">
+          <button
+            className="font-vt323 w-fit bg-green-dark py-2 px-8 rounded-sm hover:bg-green-900 transition-colors"
+            onClick={handleNewTaskClick}
+          >
             Nova tarefa
           </button>
 
