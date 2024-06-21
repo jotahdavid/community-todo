@@ -2,15 +2,15 @@ import { Task as PrismaTask } from '@prisma/client';
 
 import prisma from '@/services/prisma';
 
-export interface NewTodoDTO {
+export interface NewTaskDTO {
   title: string;
   categories: number[];
   createdBy: string;
 }
 
-export type Task = Awaited<ReturnType<TodoRepository['getAll']>>[0];
+export type Task = Awaited<ReturnType<TaskRepository['getAll']>>[0];
 
-class TodoRepository {
+class TaskRepository {
   async getAll() {
     return prisma.task.findMany({
       include: {
@@ -21,10 +21,10 @@ class TodoRepository {
     });
   }
 
-  async save(newTodo: NewTodoDTO): Promise<PrismaTask> {
+  async save(newTask: NewTaskDTO): Promise<PrismaTask> {
     const author = await prisma.player.findFirst({
       where: {
-        name: newTodo.createdBy,
+        name: newTask.createdBy,
       },
     });
 
@@ -33,7 +33,7 @@ class TodoRepository {
     if (!author) {
       const newAuthor = await prisma.player.create({
         data: {
-          name: newTodo.createdBy,
+          name: newTask.createdBy,
         },
       });
       authorId = newAuthor.id;
@@ -41,11 +41,11 @@ class TodoRepository {
 
     return prisma.task.create({
       data: {
-        title: newTodo.title,
+        title: newTask.title,
         completed: false,
         authorId: authorId!,
         categories: {
-          connect: newTodo.categories.map((categoryId) => ({
+          connect: newTask.categories.map((categoryId) => ({
             id: categoryId,
           })),
         },
@@ -56,4 +56,4 @@ class TodoRepository {
   }
 }
 
-export default new TodoRepository();
+export default new TaskRepository();

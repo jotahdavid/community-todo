@@ -5,19 +5,19 @@ import { FormEvent, useState } from 'react';
 
 import { cn } from '@/utils/cn';
 
-export interface NewTodo {
+export interface NewTask {
   title: string;
   categories: number[];
 }
 
 interface CreateTaskModalProps {
   categories: Category[];
-  onAdd?: (newTodo: NewTodo) => Promise<void>;
+  onAdd?: (newTask: NewTask) => Promise<void>;
   onClose?: () => void;
 }
 
 export function CreateTaskModal({ categories, onAdd, onClose }: CreateTaskModalProps) {
-  const [newTodo, setNewTodo] = useState<NewTodo>({
+  const [newTask, setNewTask] = useState<NewTask>({
     title: '',
     categories: [],
   });
@@ -26,7 +26,7 @@ export function CreateTaskModal({ categories, onAdd, onClose }: CreateTaskModalP
   function handleTaskTitleInput(event: FormEvent<HTMLInputElement>) {
     const title = event.currentTarget.value;
 
-    setNewTodo((prevState) => ({
+    setNewTask((prevState) => ({
       ...prevState,
       title,
     }));
@@ -34,9 +34,9 @@ export function CreateTaskModal({ categories, onAdd, onClose }: CreateTaskModalP
   }
 
   function handleCategoryClick(id: number) {
-    const index = newTodo.categories.findIndex((categoryId) => categoryId === id);
+    const index = newTask.categories.findIndex((categoryId) => categoryId === id);
 
-    setNewTodo((prevState) => {
+    setNewTask((prevState) => {
       if (index === -1) {
         return {
           ...prevState,
@@ -61,12 +61,12 @@ export function CreateTaskModal({ categories, onAdd, onClose }: CreateTaskModalP
   }
 
   function handleAdd() {
-    if (newTodo.title.length < 4) {
+    if (newTask.title.length < 4) {
       setError('Insira uma tarefa de no mínimo 4 caracteres.');
       return;
     }
 
-    onAdd?.(newTodo);
+    onAdd?.(newTask);
   }
 
   return (
@@ -86,7 +86,7 @@ export function CreateTaskModal({ categories, onAdd, onClose }: CreateTaskModalP
             className="text-3xl p-4 block w-full bg-[#6AA84F] outline-none border-2 border-transparent focus-within:border-green-dark transition-colors mb-1"
             type="text"
             name="nickname"
-            value={newTodo.title}
+            value={newTask.title}
             onInput={handleTaskTitleInput}
           />
           {error && (
@@ -101,7 +101,7 @@ export function CreateTaskModal({ categories, onAdd, onClose }: CreateTaskModalP
 
           <ul className="flex gap-3">
             {categories.map((category) => {
-              const isActive = newTodo.categories.find((categoryId) => categoryId === category.id);
+              const isActive = newTask.categories.find((categoryId) => categoryId === category.id);
 
               return (
                 <li key={category.id}>

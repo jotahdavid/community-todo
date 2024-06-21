@@ -4,22 +4,22 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { AddUsernameModal } from '@/components/Modal/AddUsernameModal';
 import { TodoItem } from '@/components/TodoItem';
-import { NewTodoDTO, Task } from '@/repositories/TodoRepository';
-import { CreateTaskModal, type NewTodo } from '@/components/Modal/CreateTaskModal';
+import { NewTaskDTO, Task } from '@/repositories/TaskRepository';
+import { CreateTaskModal, type NewTask as NewTask } from '@/components/Modal/CreateTaskModal';
 import { Category } from '@prisma/client';
 
 interface ClientComponentProps {
   categories: Category[];
-  completedTodos: Task[];
-  pendingTodos: Task[];
-  saveTodo: (newTodo: NewTodoDTO) => Promise<any>;
+  completedTasks: Task[];
+  pendingTasks: Task[];
+  saveTask: (newTask: NewTaskDTO) => Promise<any>;
 }
 
 const LOCAL_STORAGE_KEYS = {
   MINECRAFT_NICKNAME: 'MINECRAFT_NICKNAME',
 };
 
-export function ClientComponent({ categories, completedTodos, pendingTodos, saveTodo }: ClientComponentProps) {
+export function ClientComponent({ categories, completedTasks, pendingTasks, saveTask }: ClientComponentProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [nickname, setNickname] = useState<string | null>(null);
   const [isAddUsernameModalOpen, setIsAddUsernameModalOpen] = useState(false);
@@ -41,11 +41,11 @@ export function ClientComponent({ categories, completedTodos, pendingTodos, save
     setIsCreateTaskModalOpen(true);
   }
 
-  async function handleAddTask(newTodo: NewTodo) {
+  async function handleAddTask(newTask: NewTask) {
     if (!nickname) return;
     setIsCreateTaskModalOpen(false);
-    saveTodo({
-      ...newTodo,
+    saveTask({
+      ...newTask,
       createdBy: nickname,
     });
   }
@@ -116,9 +116,9 @@ export function ClientComponent({ categories, completedTodos, pendingTodos, save
           <h2 className="text-2xl mb-7 font-bold">A fazer</h2>
 
           <ul className="space-y-4 flex-1">
-            {pendingTodos.map((pendingTodo) => (
-              <li key={pendingTodo.id}>
-                <TodoItem todo={pendingTodo} />
+            {pendingTasks.map((pendingTask) => (
+              <li key={pendingTask.id}>
+                <TodoItem todo={pendingTask} />
               </li>
             ))}
           </ul>
@@ -128,9 +128,9 @@ export function ClientComponent({ categories, completedTodos, pendingTodos, save
           <h2 className="text-2xl mb-7 font-bold">Concluido</h2>
 
           <ul className="space-y-4 pb-14">
-            {completedTodos.map((completedTodo) => (
-              <li key={completedTodo.id}>
-                <TodoItem todo={completedTodo} />
+            {completedTasks.map((completedTask) => (
+              <li key={completedTask.id}>
+                <TodoItem todo={completedTask} />
               </li>
             ))}
           </ul>

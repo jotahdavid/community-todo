@@ -1,5 +1,5 @@
 import { CheckIcon } from '@/components/Icons/CheckIcon';
-import { Task } from '@/repositories/TodoRepository';
+import { Task } from '@/repositories/TaskRepository';
 import { cn } from '@/utils/cn';
 
 interface TodoItemProps {
