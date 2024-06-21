@@ -4,9 +4,14 @@ import { cn } from '@/utils/cn';
 
 interface TodoItemProps {
   todo: Task;
+  onCheck?: (task: Task) => Promise<void>;
 }
 
-export function TodoItem({ todo }: TodoItemProps) {
+export function TodoItem({ todo, onCheck }: TodoItemProps) {
+  function handleCheckClick() {
+    onCheck?.(todo);
+  }
+
   return (
     <div
       className={cn(
@@ -17,7 +22,7 @@ export function TodoItem({ todo }: TodoItemProps) {
       <div className="flex-1">
         <div className="mb-4">
           <p className="text-lg flex items-center">
-            <button className="size-4 mr-2 fill-white">
+            <button className="size-4 mr-2 fill-white" onClick={handleCheckClick}>
               <CheckIcon fill={todo.completed} />
             </button>
             <span className={cn({ 'line-through': todo.completed })}>

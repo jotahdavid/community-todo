@@ -1,4 +1,4 @@
-import TaskRepository, { NewTaskDTO } from '@/repositories/TaskRepository';
+import TaskRepository, { NewTaskDTO, Task } from '@/repositories/TaskRepository';
 import { ClientComponent } from './client';
 import CategoryRepository from '@/repositories/CategoryRepository';
 
@@ -6,6 +6,19 @@ async function saveTask(newTask: NewTaskDTO) {
   'use server';
 
   return TaskRepository.save(newTask);
+}
+
+async function toggleTaskStatus(taskId: number) {
+  'use server';
+
+  const task = await TaskRepository.findById(taskId);
+
+  if (!task) return;
+
+  return TaskRepository.update(task.id, {
+    ...task,
+    completed: !task.completed,
+  });
 }
 
 export default async function Home() {
@@ -18,6 +31,7 @@ export default async function Home() {
         initialTasks={tasks}
         categories={categories}
         saveTask={saveTask}
+        toggleTaskStatus={toggleTaskStatus}
       />
     </div>
   );

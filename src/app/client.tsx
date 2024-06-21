@@ -12,14 +12,15 @@ import tasksService from '@/services/tasksService';
 interface ClientComponentProps {
   initialTasks: Task[];
   categories: Category[];
-  saveTask: (newTask: NewTaskDTO) => Promise<any>;
+  saveTask: (newTask: NewTaskDTO) => Promise<unknown>;
+  toggleTaskStatus: (taskId: number) => Promise<unknown>;
 }
 
 const LOCAL_STORAGE_KEYS = {
   MINECRAFT_NICKNAME: 'MINECRAFT_NICKNAME',
 };
 
-export function ClientComponent({ categories, initialTasks, saveTask }: ClientComponentProps) {
+export function ClientComponent({ categories, initialTasks, saveTask, toggleTaskStatus }: ClientComponentProps) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [isLoading, setIsLoading] = useState(true);
   const [nickname, setNickname] = useState<string | null>(null);
@@ -42,6 +43,11 @@ export function ClientComponent({ categories, initialTasks, saveTask }: ClientCo
     setIsCreateTaskModalOpen(true);
   }
 
+  async function refreshTasks() {
+    const newTasks = await tasksService.getAll();
+    setTasks(newTasks);
+  }
+
   async function handleAddTask(newTask: NewTask) {
     if (!nickname) return;
     setIsCreateTaskModalOpen(false);
@@ -49,13 +55,16 @@ export function ClientComponent({ categories, initialTasks, saveTask }: ClientCo
       ...newTask,
       createdBy: nickname,
     });
-
-    const newTasks = await tasksService.getAll();
-    setTasks(newTasks);
+    await refreshTasks();
   }
 
   function handleCloseCreateTaskModal() {
     setIsCreateTaskModalOpen(false);
+  }
+
+  async function handleCheckClick(task: Task) {
+    await toggleTaskStatus(task.id);
+    await refreshTasks();
   }
 
   const pendingTasks = tasks.filter((task) => !task.completed);
@@ -125,7 +134,7 @@ export function ClientComponent({ categories, initialTasks, saveTask }: ClientCo
           <ul className="space-y-4 flex-1">
             {pendingTasks.map((pendingTask) => (
               <li key={pendingTask.id}>
-                <TodoItem todo={pendingTask} />
+                <TodoItem onCheck={handleCheckClick} todo={pendingTask} />
               </li>
             ))}
           </ul>
@@ -137,7 +146,7 @@ export function ClientComponent({ categories, initialTasks, saveTask }: ClientCo
           <ul className="space-y-4 pb-14">
             {completedTasks.map((completedTask) => (
               <li key={completedTask.id}>
-                <TodoItem todo={completedTask} />
+                <TodoItem onCheck={handleCheckClick} todo={completedTask} />
               </li>
             ))}
           </ul>

@@ -2,13 +2,15 @@ import { Task as PrismaTask } from '@prisma/client';
 
 import prisma from '@/services/prisma';
 
+export type Task = Awaited<ReturnType<TaskRepository['getAll']>>[0];
+
 export interface NewTaskDTO {
   title: string;
   categories: number[];
   createdBy: string;
 }
 
-export type Task = Awaited<ReturnType<TaskRepository['getAll']>>[0];
+export type UpdateTaskDTO = Omit<PrismaTask, 'id'>;
 
 class TaskRepository {
   async getAll() {
@@ -18,6 +20,14 @@ class TaskRepository {
         author: true,
         categories: true,
       },
+    });
+  }
+
+  async findById(taskId: number) {
+    return prisma.task.findUnique({
+      where: {
+        id: taskId,
+      }
     });
   }
 
@@ -52,6 +62,15 @@ class TaskRepository {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+    });
+  }
+
+  async update(taskId: number, updatedTask: UpdateTaskDTO) {
+    return prisma.task.update({
+      where: {
+        id: taskId,
+      },
+      data: updatedTask,
     });
   }
 }
