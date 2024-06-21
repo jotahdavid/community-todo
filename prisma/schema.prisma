@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Task {
+  id          Int     @id @default(autoincrement())
+  title       String  @db.VarChar(250)
+  description String? @db.Text
+  completed   Boolean @db.Boolean
+
+  players    Player[]
+  categories Category[]
+
+  author   Player @relation(name: "author", fields: [authorId], references: [id])
+  authorId Int    @map("author_id")
+
+  createdAt DateTime @map("created_at") @db.Timestamp()
+  updatedAt DateTime @map("updated_at") @db.Timestamp()
+
+  @@map("tasks")
+}
+
+model Player {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(32)
+
+  tasksAsAuthor   Task[] @relation("author")
+  tasksAsAssigner Task[]
+
+  @@map("players")
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(250)
+
+  tasks Task[]
+
+  @@map("categories")
+}
