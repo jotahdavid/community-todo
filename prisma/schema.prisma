@@ -29,7 +29,7 @@ model Player {
   id            Int             @id @default(autoincrement())
   name          String          @db.VarChar(32)
   tasks         Task[]
-  AssignsOnTask AssignsOnTask[]
+  assignsOnTask AssignsOnTask[]
 
   @@map("players")
 }
@@ -44,7 +44,7 @@ model Category {
 }
 
 model CategoriesOnTask {
-  Category   Category @relation(fields: [categoryId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
   categoryId Int      @map("category_id")
 
   task   Task @relation(fields: [taskId], references: [id])
