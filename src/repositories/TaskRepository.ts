@@ -27,7 +27,10 @@ class TaskRepository {
     return prisma.task.findUnique({
       where: {
         id: taskId,
-      }
+      },
+      include: {
+        players: true,
+      },
     });
   }
 
@@ -71,6 +74,21 @@ class TaskRepository {
         id: taskId,
       },
       data: updatedTask,
+    });
+  }
+
+  async updatePlayers(taskId: number, playerIds: number[]) {
+    return prisma.task.update({
+      where: {
+        id: taskId,
+      },
+      data: {
+        players: {
+          set: playerIds.map((playerId) => ({
+            id: playerId,
+          })),
+        },
+      },
     });
   }
 }

@@ -14,13 +14,14 @@ interface ClientComponentProps {
   categories: Category[];
   saveTask: (newTask: NewTaskDTO) => Promise<unknown>;
   toggleTaskStatus: (taskId: number) => Promise<unknown>;
+  togglePlayerInTask: (playerNickname: string, taskId: number) => Promise<unknown>;
 }
 
 const LOCAL_STORAGE_KEYS = {
   MINECRAFT_NICKNAME: 'MINECRAFT_NICKNAME',
 };
 
-export function ClientComponent({ categories, initialTasks, saveTask, toggleTaskStatus }: ClientComponentProps) {
+export function ClientComponent({ categories, initialTasks, saveTask, toggleTaskStatus, togglePlayerInTask }: ClientComponentProps) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [isLoading, setIsLoading] = useState(true);
   const [nickname, setNickname] = useState<string | null>(null);
@@ -64,6 +65,12 @@ export function ClientComponent({ categories, initialTasks, saveTask, toggleTask
 
   async function handleCheckClick(task: Task) {
     await toggleTaskStatus(task.id);
+    await refreshTasks();
+  }
+
+  async function handleTogglePlayerInTask(task: Task) {
+    if (!nickname) return;
+    await togglePlayerInTask(nickname, task.id);
     await refreshTasks();
   }
 
@@ -134,7 +141,12 @@ export function ClientComponent({ categories, initialTasks, saveTask, toggleTask
           <ul className="space-y-4 flex-1">
             {pendingTasks.map((pendingTask) => (
               <li key={pendingTask.id}>
-                <TodoItem onCheck={handleCheckClick} todo={pendingTask} />
+                <TodoItem
+                  onCheck={handleCheckClick}
+                  onToggleAssign={handleTogglePlayerInTask}
+                  todo={pendingTask}
+                  isAssigned={Boolean(pendingTask.players.find((player) => player.name === nickname))}
+                />
               </li>
             ))}
           </ul>
@@ -146,7 +158,12 @@ export function ClientComponent({ categories, initialTasks, saveTask, toggleTask
           <ul className="space-y-4 pb-14">
             {completedTasks.map((completedTask) => (
               <li key={completedTask.id}>
-                <TodoItem onCheck={handleCheckClick} todo={completedTask} />
+                <TodoItem
+                  onCheck={handleCheckClick}
+                  onToggleAssign={handleTogglePlayerInTask}
+                  todo={completedTask}
+                  isAssigned={Boolean(completedTask.players.find((player) => player.name === nickname))}
+                />
               </li>
             ))}
           </ul>

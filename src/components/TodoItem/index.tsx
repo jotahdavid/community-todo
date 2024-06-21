@@ -4,12 +4,18 @@ import { cn } from '@/utils/cn';
 
 interface TodoItemProps {
   todo: Task;
+  isAssigned?: boolean;
   onCheck?: (task: Task) => Promise<void>;
+  onToggleAssign?: (task: Task) => Promise<void>;
 }
 
-export function TodoItem({ todo, onCheck }: TodoItemProps) {
+export function TodoItem({ todo, isAssigned, onCheck, onToggleAssign }: TodoItemProps) {
   function handleCheckClick() {
     onCheck?.(todo);
+  }
+
+  function handleToggleAssignClick() {
+    onToggleAssign?.(todo);
   }
 
   return (
@@ -52,8 +58,11 @@ export function TodoItem({ todo, onCheck }: TodoItemProps) {
         <ul className="flex justify-end">
           {!todo.completed && (
             <li>
-              <button className="bg-green-400 size-9 text-3xl leading-none flex items-center justify-center z-20 relative shadow-[4px_1px_5.5px_rgb(0_0_0/50%)]">
-                +
+              <button
+                className="bg-green-400 size-9 text-3xl leading-none flex items-center justify-center z-20 relative shadow-[4px_1px_5.5px_rgb(0_0_0/50%)]"
+                onClick={handleToggleAssignClick}
+              >
+                {isAssigned ? '-' : '+'}
               </button>
             </li>
           )}
