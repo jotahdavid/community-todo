@@ -7,11 +7,11 @@ import { TodoItem } from '@/components/TodoItem';
 import { NewTaskDTO, Task } from '@/repositories/TaskRepository';
 import { CreateTaskModal, type NewTask as NewTask } from '@/components/Modal/CreateTaskModal';
 import { Category } from '@prisma/client';
+import tasksService from '@/services/tasksService';
 
 interface ClientComponentProps {
+  initialTasks: Task[];
   categories: Category[];
-  completedTasks: Task[];
-  pendingTasks: Task[];
   saveTask: (newTask: NewTaskDTO) => Promise<any>;
 }
 
@@ -19,7 +19,8 @@ const LOCAL_STORAGE_KEYS = {
   MINECRAFT_NICKNAME: 'MINECRAFT_NICKNAME',
 };
 
-export function ClientComponent({ categories, completedTasks, pendingTasks, saveTask }: ClientComponentProps) {
+export function ClientComponent({ categories, initialTasks, saveTask }: ClientComponentProps) {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [isLoading, setIsLoading] = useState(true);
   const [nickname, setNickname] = useState<string | null>(null);
   const [isAddUsernameModalOpen, setIsAddUsernameModalOpen] = useState(false);
@@ -44,15 +45,21 @@ export function ClientComponent({ categories, completedTasks, pendingTasks, save
   async function handleAddTask(newTask: NewTask) {
     if (!nickname) return;
     setIsCreateTaskModalOpen(false);
-    saveTask({
+    await saveTask({
       ...newTask,
       createdBy: nickname,
     });
+
+    const newTasks = await tasksService.getAll();
+    setTasks(newTasks);
   }
 
   function handleCloseCreateTaskModal() {
     setIsCreateTaskModalOpen(false);
   }
+
+  const pendingTasks = tasks.filter((task) => !task.completed);
+  const completedTasks = tasks.filter((task) => task.completed);
 
   if (isLoading) {
     // TODO: adicionar componente Loader/Spinner
