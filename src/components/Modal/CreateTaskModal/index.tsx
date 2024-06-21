@@ -1,39 +1,22 @@
 'use client';
 
-import { cn } from '@/utils/cn';
 import { Category } from '@prisma/client';
 import { FormEvent, useState } from 'react';
 
-interface NewTodo {
+import { cn } from '@/utils/cn';
+
+export interface NewTodo {
   title: string;
   categories: number[];
 }
 
 interface CreateTaskModalProps {
+  categories: Category[];
   onAdd?: (newTodo: NewTodo) => Promise<void>;
   onClose?: () => void;
 }
 
-const MOCK_CATEGORIES: Category[] = [
-  {
-    id: 1,
-    name: 'Construção',
-  },
-  {
-    id: 2,
-    name: 'Farms'
-  },
-  {
-    id: 3,
-    name: 'Decoração',
-  },
-  {
-    id: 4,
-    name: 'Automação'
-  }
-];
-
-export function CreateTaskModal({ onAdd, onClose }: CreateTaskModalProps) {
+export function CreateTaskModal({ categories, onAdd, onClose }: CreateTaskModalProps) {
   const [newTodo, setNewTodo] = useState<NewTodo>({
     title: '',
     categories: [],
@@ -43,21 +26,34 @@ export function CreateTaskModal({ onAdd, onClose }: CreateTaskModalProps) {
   function handleTaskTitleInput(event: FormEvent<HTMLInputElement>) {
     const title = event.currentTarget.value;
 
-    setNewTodo((prev) => ({
-      ...prev,
+    setNewTodo((prevState) => ({
+      ...prevState,
       title,
     }));
     setError(null);
   }
 
   function handleCategoryClick(id: number) {
-    setNewTodo((prev) => ({
-      ...prev,
-      categories: [
-        ...prev.categories,
-        id,
-      ],
-    }));
+    const index = newTodo.categories.findIndex((categoryId) => categoryId === id);
+
+    setNewTodo((prevState) => {
+      if (index === -1) {
+        return {
+          ...prevState,
+          categories: [
+            ...prevState.categories,
+            id,
+          ],
+        };
+      }
+
+      const categories = prevState.categories.filter((categoryId) => categoryId !== id);
+
+      return {
+        ...prevState,
+        categories,
+      };
+    });
   }
 
   function handleClose() {
@@ -104,7 +100,7 @@ export function CreateTaskModal({ onAdd, onClose }: CreateTaskModalProps) {
           <span className="block text-3xl mb-3">Seleciona a categoria:</span>
 
           <ul className="flex gap-3">
-            {MOCK_CATEGORIES.map((category) => {
+            {categories.map((category) => {
               const isActive = newTodo.categories.find((categoryId) => categoryId === category.id);
 
               return (
@@ -114,7 +110,7 @@ export function CreateTaskModal({ onAdd, onClose }: CreateTaskModalProps) {
                       'font-vt323 text-2xl bg-white text-green-light rounded-sm py-1 px-2 hover:bg-green-dark hover:text-white transition-colors',
                       { 'bg-black/60': isActive, 'text-white': isActive }
                     )}
-                    onClick={() => !isActive && handleCategoryClick(category.id)}
+                    onClick={() => handleCategoryClick(category.id)}
                   >
                     # {category.name}
                   </button>

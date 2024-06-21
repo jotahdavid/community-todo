@@ -1,9 +1,9 @@
 import { CheckIcon } from '@/components/Icons/CheckIcon';
-import { Todo } from '@/repositories/TodoRepository';
+import { Task } from '@/repositories/TodoRepository';
 import { cn } from '@/utils/cn';
 
 interface TodoItemProps {
-  todo: Todo;
+  todo: Task;
 }
 
 export function TodoItem({ todo }: TodoItemProps) {
@@ -26,7 +26,7 @@ export function TodoItem({ todo }: TodoItemProps) {
           </p>
 
           <span className="text-green-400">
-            * Criada por &quot;{todo.createdBy}&quot;
+            * Criada por &quot;{todo.author.name}&quot;
           </span>
         </div>
 
@@ -52,14 +52,14 @@ export function TodoItem({ todo }: TodoItemProps) {
               </button>
             </li>
           )}
-          {todo.users.map((user, index) => (
-            <li key={user} className="-ml-2">
+          {todo.players.map((player, index) => (
+            <li key={player.id} className="-ml-2">
               <img
                 className="size-9 relative shadow-[4px_1px_5.5px_rgb(0_0_0/50%)]"
                 style={{ zIndex: 10 - index }}
-                src={`https://mineskin.eu/helm/${user}`}
-                alt={`Avatar ${user}`}
-                title={user}
+                src={`https://mineskin.eu/helm/${player.name}`}
+                alt={`Avatar ${player.name}`}
+                title={player.name}
               />
             </li>
           ))}

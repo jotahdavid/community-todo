@@ -1,49 +1,58 @@
-import { randomUUID } from 'crypto';
+import { Task as PrismaTask } from '@prisma/client';
 
-export interface Category {
-  id: string;
-  name: string;
-}
+import prisma from '@/services/prisma';
 
-export interface Todo {
-  id: string;
+export interface NewTodoDTO {
   title: string;
+  categories: number[];
   createdBy: string;
-  categories: Category[];
-  users: string[];
-  completed: boolean;
 }
+
+export type Task = Awaited<ReturnType<TodoRepository['getAll']>>[0];
 
 class TodoRepository {
-  async getAll(): Promise<Todo[]> {
-    return [
-      {
-        id: randomUUID(),
-        title: 'Tarefa 1',
-        createdBy: 'Fulano',
+  async getAll() {
+    return prisma.task.findMany({
+      include: {
+        players: true,
+        author: true,
+        categories: true,
+      },
+    });
+  }
+
+  async save(newTodo: NewTodoDTO): Promise<PrismaTask> {
+    const author = await prisma.player.findFirst({
+      where: {
+        name: newTodo.createdBy,
+      },
+    });
+
+    let authorId = author?.id;
+
+    if (!author) {
+      const newAuthor = await prisma.player.create({
+        data: {
+          name: newTodo.createdBy,
+        },
+      });
+      authorId = newAuthor.id;
+    }
+
+    return prisma.task.create({
+      data: {
+        title: newTodo.title,
         completed: false,
-        categories: [
-          { id: randomUUID(), name: 'Automação' }
-        ],
-        users: ['Monerk'],
+        authorId: authorId!,
+        categories: {
+          connect: newTodo.categories.map((categoryId) => ({
+            id: categoryId,
+          })),
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
-      {
-        id: randomUUID(),
-        title: 'Tarefa 2',
-        createdBy: 'Fulano',
-        completed: false,
-        categories: [],
-        users: ['lreporta'],
-      },
-      {
-        id: randomUUID(),
-        title: 'Tarefa concluida',
-        createdBy: 'Beltrano',
-        completed: true,
-        categories: [],
-        users: ['VenomExtreme', 'Feromonas'],
-      },
-    ];
+    });
   }
 }
 

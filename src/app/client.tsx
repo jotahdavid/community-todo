@@ -4,25 +4,30 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { AddUsernameModal } from '@/components/Modal/AddUsernameModal';
 import { TodoItem } from '@/components/TodoItem';
-import { Todo } from '@/repositories/TodoRepository';
-import { CreateTaskModal } from '@/components/Modal/CreateTaskModal';
+import { NewTodoDTO, Task } from '@/repositories/TodoRepository';
+import { CreateTaskModal, type NewTodo } from '@/components/Modal/CreateTaskModal';
+import { Category } from '@prisma/client';
 
 interface ClientComponentProps {
-  completedTodos: Todo[];
-  pendingTodos: Todo[];
+  categories: Category[];
+  completedTodos: Task[];
+  pendingTodos: Task[];
+  saveTodo: (newTodo: NewTodoDTO) => Promise<any>;
 }
 
 const LOCAL_STORAGE_KEYS = {
   MINECRAFT_NICKNAME: 'MINECRAFT_NICKNAME',
 };
 
-export function ClientComponent({ completedTodos, pendingTodos }: ClientComponentProps) {
+export function ClientComponent({ categories, completedTodos, pendingTodos, saveTodo }: ClientComponentProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [nickname, setNickname] = useState<string | null>(null);
   const [isAddUsernameModalOpen, setIsAddUsernameModalOpen] = useState(false);
   const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 
   useEffect(() => {
     const nickname = localStorage.getItem(LOCAL_STORAGE_KEYS.MINECRAFT_NICKNAME);
+    setNickname(nickname);
     setIsAddUsernameModalOpen(!nickname);
     setIsLoading(false);
   }, []);
@@ -32,8 +37,21 @@ export function ClientComponent({ completedTodos, pendingTodos }: ClientComponen
     setIsAddUsernameModalOpen(false);
   }, []);
 
-  function handleNewTaskClick() {
+  function handleOpenCreateTaskModal() {
     setIsCreateTaskModalOpen(true);
+  }
+
+  async function handleAddTask(newTodo: NewTodo) {
+    if (!nickname) return;
+    setIsCreateTaskModalOpen(false);
+    saveTodo({
+      ...newTodo,
+      createdBy: nickname,
+    });
+  }
+
+  function handleCloseCreateTaskModal() {
+    setIsCreateTaskModalOpen(false);
   }
 
   if (isLoading) {
@@ -45,7 +63,13 @@ export function ClientComponent({ completedTodos, pendingTodos }: ClientComponen
     <>
       {isAddUsernameModalOpen && <AddUsernameModal onSubmit={handleAddUsernameSubmit} />}
 
-      {isCreateTaskModalOpen && <CreateTaskModal />}
+      {isCreateTaskModalOpen && (
+        <CreateTaskModal
+          categories={categories}
+          onAdd={handleAddTask}
+          onClose={handleCloseCreateTaskModal}
+        />
+      )}
 
       <aside className="h-full bg-green-dark px-16 py-14 w-full max-w-[390px] flex flex-col justify-between overflow-y-auto">
         <header>
@@ -82,7 +106,7 @@ export function ClientComponent({ completedTodos, pendingTodos }: ClientComponen
         <div className="h-full p-14 flex flex-col">
           <button
             className="font-vt323 w-fit bg-green-dark py-2 px-8 rounded-sm hover:bg-green-900 transition-colors"
-            onClick={handleNewTaskClick}
+            onClick={handleOpenCreateTaskModal}
           >
             Nova tarefa
           </button>
