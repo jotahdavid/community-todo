@@ -1,5 +1,5 @@
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 async function main() {
   const createMany = await prisma.category.createMany({
@@ -9,16 +9,17 @@ async function main() {
       { name: 'Decoração' },
       { name: 'Automação' },
     ],
-  })
+  });
 
-  console.log(createMany)
+  console.log(createMany);
 }
+
 main()
   .then(async () => {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
