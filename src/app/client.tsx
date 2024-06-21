@@ -37,6 +37,7 @@ export function ClientComponent({ categories, initialTasks, saveTask, toggleTask
 
   const handleAddUsernameSubmit = useCallback(async (nickname: string) => {
     localStorage.setItem(LOCAL_STORAGE_KEYS.MINECRAFT_NICKNAME, nickname);
+    setNickname(nickname);
     setIsAddUsernameModalOpen(false);
   }, []);
 
