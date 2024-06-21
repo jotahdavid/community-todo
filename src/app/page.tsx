@@ -2,7 +2,6 @@ import TaskRepository, { NewTaskDTO, Task } from '@/repositories/TaskRepository'
 import { ClientComponent } from './client';
 import CategoryRepository from '@/repositories/CategoryRepository';
 import PlayerRepository from '@/repositories/PlayerRepository';
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 
 async function saveTask(newTask: NewTaskDTO) {
   'use server';
@@ -48,7 +47,10 @@ async function togglePlayerInTask(playerNickname: string, taskId: number) {
   return TaskRepository.updatePlayers(task.id, [...taskPlayerIds, player.id]);
 }
 
-export default async function Home({ tasks }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export const revalidate = 1;
+
+export default async function Home() {
+  const tasks = await TaskRepository.getAll();
   const categories = await CategoryRepository.getAll();
 
   return (
@@ -62,9 +64,4 @@ export default async function Home({ tasks }: InferGetServerSidePropsType<typeof
       />
     </div>
   );
-}
-
-export async function getServerSideProps() {
-  const tasks = await TaskRepository.getAll();
-  return { props: { tasks } };
 }
