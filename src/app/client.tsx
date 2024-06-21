@@ -101,7 +101,7 @@ export function ClientComponent({ categories, initialTasks, saveTask, toggleTask
 
           <div className="flex flex-col gap-y-5 mb-10 pb-10 border-b">
             <a className="text-2xl hover:underline underline-offset-2" href={process.env.NEXT_PUBLIC_DOC_URL}>
-              Documentação
+              Tutoriais
             </a>
           </div>
 
