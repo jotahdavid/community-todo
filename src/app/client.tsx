@@ -25,7 +25,6 @@ const LOCAL_STORAGE_KEYS = {
 export function ClientComponent({ categories, saveTask, toggleTaskStatus, togglePlayerInTask }: ClientComponentProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
-  console.log(activeCategory);
   const [isLoading, setIsLoading] = useState(true);
   const [nickname, setNickname] = useState<string | null>(null);
   const [isAddUsernameModalOpen, setIsAddUsernameModalOpen] = useState(false);
