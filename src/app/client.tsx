@@ -11,6 +11,8 @@ import tasksService from '@/services/tasksService';
 import { Spinner } from '@/components/Spinner';
 import { cn } from '@/utils/cn';
 import { RotateRightIcon } from '@/components/Icons/RotateRightIcon';
+import { DiscordIcon } from '@/components/Icons/DiscordIcon';
+import { GithubIcon } from '@/components/Icons/GithubIcon';
 
 interface ClientComponentProps {
   categories: Category[];
@@ -119,7 +121,7 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
           <h1 className="text-5xl mb-20 font-vt323 uppercase text-center">ServerdeMine</h1>
 
           <div className="flex flex-col gap-y-5 mb-10 pb-10 border-b">
-            <a className="text-2xl hover:underline underline-offset-2" href={process.env.NEXT_PUBLIC_DOC_URL}>
+            <a className="text-2xl hover:underline underline-offset-2" href={process.env.NEXT_PUBLIC_DOC_URL} target="_blank">
               Tutoriais
             </a>
           </div>
@@ -144,7 +146,16 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
           </div>
         </header>
 
-        <footer className="mt-4 flex justify-center">
+        <footer className="mt-10 flex flex-col items-center justify-center">
+          <div className="mb-6 flex items-center justify-between max-w-[180px] w-full">
+            <a href={process.env.NEXT_PUBLIC_DISCORD_URL} target="_blank" className="block">
+              <DiscordIcon className="size-12 fill-white hover:fill-green-light transition-colors" />
+            </a>
+
+            <a href={process.env.NEXT_PUBLIC_GITHUB_URL} target="_blank" className="block">
+              <GithubIcon className="size-12 fill-white hover:fill-green-light transition-colors" />
+            </a>
+          </div>
           <a href="https://studiomodus.com.br" target="_blank">
             <img src="/logo.webp" alt="Logo do StudioModus" title="Studio Modus" />
           </a>
