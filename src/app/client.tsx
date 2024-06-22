@@ -155,14 +155,14 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
         <div className="h-full p-14 flex flex-col">
           <div className="flex items-center gap-x-2">
             <button
-              className="font-vt323 text-2xl w-fit bg-green-dark py-2 px-6 rounded-sm hover:bg-green-900 transition-colors"
+              className="font-vt323 text-2xl w-fit bg-green-dark py-2 px-6 rounded-sm hover:bg-green-900 transition-colors shadow-sm"
               onClick={handleOpenCreateTaskModal}
             >
               Nova tarefa
             </button>
 
             <button
-              className="font-vt323 text-2xl w-fit bg-green-light py-2 px-6 rounded-sm group hover:bg-white hover:text-black transition-colors flex items-center gap-x-2"
+              className="font-vt323 text-2xl w-fit bg-green-400 py-2 px-6 rounded-sm group hover:bg-white hover:text-black transition-colors flex items-center gap-x-2 shadow-sm"
               onClick={refreshTasks}
             >
               <RotateRightIcon className="size-4 fill-white group-hover:fill-black transition-colors" />
