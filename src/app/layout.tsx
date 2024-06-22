@@ -10,6 +10,10 @@ export const metadata: Metadata = {
   title: 'ServerdeMine',
   description: 'Um servidor de mine.',
   robots: 'noindex',
+  icons: {
+    icon: '/favicon.png',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export default function RootLayout({
@@ -19,21 +23,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <link rel="icon" href="/favicon.png" />
+      <head>
+        <link rel="icon" type="image/png" href="/favicon.png" />
 
-      <meta property="og:url" content="https://site.serverdemine.online" />
-      <meta property="og:type" content="website" />
-      <meta property="og:title" content="ServerdeMine" />
-      <meta property="og:site_name" content="ServerdeMine" />
-      <meta property="og:description" content="Um servidor de mine." />
-      <meta property="og:image" content="/banner.webp" />
+        <meta property="og:url" content="https://site.serverdemine.online" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="ServerdeMine" />
+        <meta property="og:site_name" content="ServerdeMine" />
+        <meta property="og:description" content="Um servidor de mine." />
+        <meta property="og:image" content="/banner.webp" />
 
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta property="twitter:domain" content="site.serverdemine.online" />
-      <meta property="twitter:url" content="https://site.serverdemine.online" />
-      <meta name="twitter:title" content="ServerdeMine" />
-      <meta name="twitter:description" content="Um servidor de mine." />
-      <meta name="twitter:image" content="/banner.webp" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta property="twitter:domain" content="site.serverdemine.online" />
+        <meta property="twitter:url" content="https://site.serverdemine.online" />
+        <meta name="twitter:title" content="ServerdeMine" />
+        <meta name="twitter:description" content="Um servidor de mine." />
+        <meta name="twitter:image" content="/banner.webp" />
+      </head>
 
       <body className={cn(raleway.className, vt323.variable, 'h-full min-h-[100vh]')}>{children}</body>
     </html>
