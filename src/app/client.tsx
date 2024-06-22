@@ -8,9 +8,9 @@ import { NewTaskDTO, Task } from '@/repositories/TaskRepository';
 import { CreateTaskModal, type NewTask as NewTask } from '@/components/Modal/CreateTaskModal';
 import { Category } from '@prisma/client';
 import tasksService from '@/services/tasksService';
+import { Spinner } from '@/components/Spinner';
 
 interface ClientComponentProps {
-  initialTasks: Task[];
   categories: Category[];
   saveTask: (newTask: NewTaskDTO) => Promise<unknown>;
   toggleTaskStatus: (taskId: number) => Promise<unknown>;
@@ -21,18 +21,21 @@ const LOCAL_STORAGE_KEYS = {
   MINECRAFT_NICKNAME: 'MINECRAFT_NICKNAME',
 };
 
-export function ClientComponent({ categories, initialTasks, saveTask, toggleTaskStatus, togglePlayerInTask }: ClientComponentProps) {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+export function ClientComponent({ categories, saveTask, toggleTaskStatus, togglePlayerInTask }: ClientComponentProps) {
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [nickname, setNickname] = useState<string | null>(null);
   const [isAddUsernameModalOpen, setIsAddUsernameModalOpen] = useState(false);
   const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 
   useEffect(() => {
+    refreshTasks();
+  }, []);
+
+  useEffect(() => {
     const nickname = localStorage.getItem(LOCAL_STORAGE_KEYS.MINECRAFT_NICKNAME);
     setNickname(nickname);
     setIsAddUsernameModalOpen(!nickname);
-    setIsLoading(false);
   }, []);
 
   const handleAddUsernameSubmit = useCallback(async (nickname: string) => {
@@ -46,13 +49,16 @@ export function ClientComponent({ categories, initialTasks, saveTask, toggleTask
   }
 
   async function refreshTasks() {
+    setIsLoading(true);
     const newTasks = await tasksService.getAll();
     setTasks(newTasks);
+    setIsLoading(false);
   }
 
   async function handleAddTask(newTask: NewTask) {
     if (!nickname) return;
     setIsCreateTaskModalOpen(false);
+    setIsLoading(true);
     await saveTask({
       ...newTask,
       createdBy: nickname,
@@ -65,12 +71,14 @@ export function ClientComponent({ categories, initialTasks, saveTask, toggleTask
   }
 
   async function handleCheckClick(task: Task) {
+    setIsLoading(true);
     await toggleTaskStatus(task.id);
     await refreshTasks();
   }
 
   async function handleTogglePlayerInTask(task: Task) {
     if (!nickname) return;
+    setIsLoading(true);
     await togglePlayerInTask(nickname, task.id);
     await refreshTasks();
   }
@@ -78,13 +86,10 @@ export function ClientComponent({ categories, initialTasks, saveTask, toggleTask
   const pendingTasks = tasks.filter((task) => !task.completed);
   const completedTasks = tasks.filter((task) => task.completed);
 
-  if (isLoading) {
-    // TODO: adicionar componente Loader/Spinner
-    return null;
-  }
-
   return (
     <>
+      {isLoading && <Loader />}
+
       {isAddUsernameModalOpen && <AddUsernameModal onSubmit={handleAddUsernameSubmit} />}
 
       {isCreateTaskModalOpen && (
@@ -171,5 +176,16 @@ export function ClientComponent({ categories, initialTasks, saveTask, toggleTask
         </div>
       </main>
     </>
+  );
+}
+
+function Loader() {
+  return (
+    <div className="bg-green-light/80 backdrop-blur-sm absolute inset-0 z-50 flex items-center justify-center">
+      <Spinner
+        size="lg"
+        className="text-green-dark"
+      />
+    </div>
   );
 }
