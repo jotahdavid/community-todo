@@ -47,7 +47,7 @@ async function togglePlayerInTask(playerNickname: string, taskId: number) {
   return TaskRepository.updatePlayers(task.id, [...taskPlayerIds, player.id]);
 }
 
-export const revalidate = 1;
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const tasks = await TaskRepository.getAll();
