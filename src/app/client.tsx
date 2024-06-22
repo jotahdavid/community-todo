@@ -162,10 +162,10 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
             </button>
 
             <button
-              className="font-vt323 text-2xl w-fit bg-green-400 py-2 px-6 rounded-sm group hover:bg-white hover:text-black transition-colors flex items-center gap-x-2 shadow-sm"
+              className="font-vt323 text-2xl w-fit bg-white text-black py-2 px-6 rounded-sm hover:bg-white/70 transition-colors flex items-center gap-x-2 shadow-sm"
               onClick={refreshTasks}
             >
-              <RotateRightIcon className="size-4 fill-white group-hover:fill-black transition-colors" />
+              <RotateRightIcon className="size-4 fill-black transition-colors" />
 
               Atualizar
             </button>

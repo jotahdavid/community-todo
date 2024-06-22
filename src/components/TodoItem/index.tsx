@@ -1,6 +1,8 @@
 import { CheckIcon } from '@/components/Icons/CheckIcon';
 import { Task } from '@/repositories/TaskRepository';
 import { cn } from '@/utils/cn';
+import { PlusIcon } from '../Icons/PlusIcon';
+import { MinusIcon } from '../Icons/MinusIcon ';
 
 interface TodoItemProps {
   todo: Task;
@@ -59,10 +61,13 @@ export function TodoItem({ todo, isAssigned, onCheck, onToggleAssign }: TodoItem
           {!todo.completed && (
             <li>
               <button
-                className="bg-green-400 size-9 text-3xl leading-none flex items-center justify-center z-20 relative shadow-[4px_1px_5.5px_rgb(0_0_0/50%)]"
+                className={cn(
+                  'bg-green-light hover:bg-[#588f40] size-9 text-3xl leading-none flex items-center justify-center z-20 relative shadow-[4px_1px_5.5px_rgb(0_0_0/50%)] transition-colors',
+                  { 'bg-red-500 hover:bg-red-800': isAssigned }
+                )}
                 onClick={handleToggleAssignClick}
               >
-                {isAssigned ? '-' : '+'}
+                {isAssigned ? <MinusIcon className="fill-white size-5" /> : <PlusIcon className="fill-white size-5" />}
               </button>
             </li>
           )}
