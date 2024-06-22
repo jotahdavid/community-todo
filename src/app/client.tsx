@@ -89,13 +89,15 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
     setActiveCategory(category.id !== activeCategory?.id ? category : null);
   }
 
-  const pendingTasks = useMemo(() => (
-    tasks.filter((task) => !task.completed && (activeCategory ? task.categories.find((category) => category.id === activeCategory.id) : true))
-  ), [tasks, activeCategory]);
+  const filteredTasks = useMemo(() => (
+      activeCategory
+        ? tasks.filter((task) => task.categories.find((category) => category.id === activeCategory.id))
+        : tasks
+  ), [activeCategory, tasks]);
 
-  const completedTasks = useMemo(() => (
-    tasks.filter((task) => task.completed && (activeCategory ? task.categories.find((category) => category.id === activeCategory.id) : true))
-  ), [tasks, activeCategory]);
+  const pendingTasks = useMemo(() => filteredTasks.filter((task) => !task.completed), [filteredTasks]);
+
+  const completedTasks = useMemo(() => filteredTasks.filter((task) => task.completed), [filteredTasks]);
 
   return (
     <>
@@ -162,6 +164,16 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
           <h2 className="text-2xl mb-7 font-bold">A fazer</h2>
 
           <ul className="space-y-4 flex-1">
+            {(filteredTasks.length === 0 && !activeCategory) && (
+              <p className="text-lg font-medium">Nenhuma tarefa foi criada até o momento, crie a sua já!</p>
+            )}
+
+            {(filteredTasks.length === 0 && activeCategory) && (
+              <p className="text-lg font-medium">
+                A categoria <strong>&quot;{activeCategory.name}&quot;</strong> não tem nenhuma tarefa.
+              </p>
+            )}
+
             {pendingTasks.map((pendingTask) => (
               <li key={pendingTask.id}>
                 <TodoItem
@@ -174,22 +186,26 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
             ))}
           </ul>
 
-          <hr className="mt-8 mb-4" />
+          {completedTasks.length > 0 && (
+            <>
+              <hr className="mt-8 mb-4" />
 
-          <h2 className="text-2xl mb-7 font-bold">Concluido</h2>
+              <h2 className="text-2xl mb-7 font-bold">Concluido</h2>
 
-          <ul className="space-y-4 pb-14">
-            {completedTasks.map((completedTask) => (
-              <li key={completedTask.id}>
-                <TodoItem
-                  onCheck={handleCheckClick}
-                  onToggleAssign={handleTogglePlayerInTask}
-                  todo={completedTask}
-                  isAssigned={Boolean(completedTask.players.find((player) => player.name === nickname))}
-                />
-              </li>
-            ))}
-          </ul>
+              <ul className="space-y-4 pb-14">
+                {completedTasks.map((completedTask) => (
+                  <li key={completedTask.id}>
+                    <TodoItem
+                      onCheck={handleCheckClick}
+                      onToggleAssign={handleTogglePlayerInTask}
+                      todo={completedTask}
+                      isAssigned={Boolean(completedTask.players.find((player) => player.name === nickname))}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       </main>
     </>
