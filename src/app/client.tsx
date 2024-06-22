@@ -10,6 +10,7 @@ import { Category } from '@prisma/client';
 import tasksService from '@/services/tasksService';
 import { Spinner } from '@/components/Spinner';
 import { cn } from '@/utils/cn';
+import { RotateRightIcon } from '@/components/Icons/RotateRightIcon';
 
 interface ClientComponentProps {
   categories: Category[];
@@ -152,12 +153,23 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
 
       <main className="h-full w-full bg-[#6aa84f] bg-[url('/minepattern.png')] overflow-y-auto">
         <div className="h-full p-14 flex flex-col">
-          <button
-            className="font-vt323 text-2xl w-fit bg-green-dark py-2 px-6 rounded-sm hover:bg-green-900 transition-colors"
-            onClick={handleOpenCreateTaskModal}
-          >
-            Nova tarefa
-          </button>
+          <div className="flex items-center gap-x-2">
+            <button
+              className="font-vt323 text-2xl w-fit bg-green-dark py-2 px-6 rounded-sm hover:bg-green-900 transition-colors"
+              onClick={handleOpenCreateTaskModal}
+            >
+              Nova tarefa
+            </button>
+
+            <button
+              className="font-vt323 text-2xl w-fit bg-green-light py-2 px-6 rounded-sm group hover:bg-white hover:text-black transition-colors flex items-center gap-x-2"
+              onClick={refreshTasks}
+            >
+              <RotateRightIcon className="size-4 fill-white group-hover:fill-black transition-colors" />
+
+              Atualizar
+            </button>
+          </div>
 
           <hr className="mt-8 mb-4" />
 
