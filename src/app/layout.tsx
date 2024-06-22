@@ -19,6 +19,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
+      <link rel="icon" href="/favicon.png" />
+
       <body className={cn(raleway.className, vt323.variable, 'h-full min-h-[100vh]')}>{children}</body>
     </html>
   );
