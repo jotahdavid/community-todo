@@ -10,6 +10,7 @@ import { Category } from '@prisma/client';
 import tasksService from '@/services/tasksService';
 import { Spinner } from '@/components/Spinner';
 import { cn } from '@/utils/cn';
+import { RotateRightIcon } from '@/components/Icons/RotateRightIcon';
 
 interface ClientComponentProps {
   categories: Category[];
@@ -25,7 +26,6 @@ const LOCAL_STORAGE_KEYS = {
 export function ClientComponent({ categories, saveTask, toggleTaskStatus, togglePlayerInTask }: ClientComponentProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
-  console.log(activeCategory);
   const [isLoading, setIsLoading] = useState(true);
   const [nickname, setNickname] = useState<string | null>(null);
   const [isAddUsernameModalOpen, setIsAddUsernameModalOpen] = useState(false);
@@ -90,13 +90,15 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
     setActiveCategory(category.id !== activeCategory?.id ? category : null);
   }
 
-  const pendingTasks = useMemo(() => (
-    tasks.filter((task) => !task.completed && (activeCategory ? task.categories.find((category) => category.id === activeCategory.id) : true))
-  ), [tasks, activeCategory]);
+  const filteredTasks = useMemo(() => (
+      activeCategory
+        ? tasks.filter((task) => task.categories.find((category) => category.id === activeCategory.id))
+        : tasks
+  ), [activeCategory, tasks]);
 
-  const completedTasks = useMemo(() => (
-    tasks.filter((task) => task.completed && (activeCategory ? task.categories.find((category) => category.id === activeCategory.id) : true))
-  ), [tasks, activeCategory]);
+  const pendingTasks = useMemo(() => filteredTasks.filter((task) => !task.completed), [filteredTasks]);
+
+  const completedTasks = useMemo(() => filteredTasks.filter((task) => task.completed), [filteredTasks]);
 
   return (
     <>
@@ -151,18 +153,39 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
 
       <main className="h-full w-full bg-[#6aa84f] bg-[url('/minepattern.png')] overflow-y-auto">
         <div className="h-full p-14 flex flex-col">
-          <button
-            className="font-vt323 text-2xl w-fit bg-green-dark py-2 px-6 rounded-sm hover:bg-green-900 transition-colors"
-            onClick={handleOpenCreateTaskModal}
-          >
-            Nova tarefa
-          </button>
+          <div className="flex items-center gap-x-2">
+            <button
+              className="font-vt323 text-2xl w-fit bg-green-dark py-2 px-6 rounded-sm hover:bg-green-900 transition-colors shadow-sm"
+              onClick={handleOpenCreateTaskModal}
+            >
+              Nova tarefa
+            </button>
+
+            <button
+              className="font-vt323 text-2xl w-fit bg-green-400 py-2 px-6 rounded-sm group hover:bg-white hover:text-black transition-colors flex items-center gap-x-2 shadow-sm"
+              onClick={refreshTasks}
+            >
+              <RotateRightIcon className="size-4 fill-white group-hover:fill-black transition-colors" />
+
+              Atualizar
+            </button>
+          </div>
 
           <hr className="mt-8 mb-4" />
 
           <h2 className="text-2xl mb-7 font-bold">A fazer</h2>
 
           <ul className="space-y-4 flex-1">
+            {(filteredTasks.length === 0 && !activeCategory) && (
+              <p className="text-lg font-medium">Nenhuma tarefa foi criada até o momento, crie a sua já!</p>
+            )}
+
+            {(filteredTasks.length === 0 && activeCategory) && (
+              <p className="text-lg font-medium">
+                A categoria <strong>&quot;{activeCategory.name}&quot;</strong> não tem nenhuma tarefa.
+              </p>
+            )}
+
             {pendingTasks.map((pendingTask) => (
               <li key={pendingTask.id}>
                 <TodoItem
@@ -175,22 +198,26 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
             ))}
           </ul>
 
-          <hr className="mt-8 mb-4" />
+          {completedTasks.length > 0 && (
+            <>
+              <hr className="mt-8 mb-4" />
 
-          <h2 className="text-2xl mb-7 font-bold">Concluido</h2>
+              <h2 className="text-2xl mb-7 font-bold">Concluido</h2>
 
-          <ul className="space-y-4 pb-14">
-            {completedTasks.map((completedTask) => (
-              <li key={completedTask.id}>
-                <TodoItem
-                  onCheck={handleCheckClick}
-                  onToggleAssign={handleTogglePlayerInTask}
-                  todo={completedTask}
-                  isAssigned={Boolean(completedTask.players.find((player) => player.name === nickname))}
-                />
-              </li>
-            ))}
-          </ul>
+              <ul className="space-y-4 pb-14">
+                {completedTasks.map((completedTask) => (
+                  <li key={completedTask.id}>
+                    <TodoItem
+                      onCheck={handleCheckClick}
+                      onToggleAssign={handleTogglePlayerInTask}
+                      todo={completedTask}
+                      isAssigned={Boolean(completedTask.players.find((player) => player.name === nickname))}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       </main>
     </>
