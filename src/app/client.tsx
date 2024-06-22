@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { AddUsernameModal } from '@/components/Modal/AddUsernameModal';
 import { TodoItem } from '@/components/TodoItem';
@@ -8,9 +8,10 @@ import { NewTaskDTO, Task } from '@/repositories/TaskRepository';
 import { CreateTaskModal, type NewTask as NewTask } from '@/components/Modal/CreateTaskModal';
 import { Category } from '@prisma/client';
 import tasksService from '@/services/tasksService';
+import { Spinner } from '@/components/Spinner';
+import { cn } from '@/utils/cn';
 
 interface ClientComponentProps {
-  initialTasks: Task[];
   categories: Category[];
   saveTask: (newTask: NewTaskDTO) => Promise<unknown>;
   toggleTaskStatus: (taskId: number) => Promise<unknown>;
@@ -21,18 +22,23 @@ const LOCAL_STORAGE_KEYS = {
   MINECRAFT_NICKNAME: 'MINECRAFT_NICKNAME',
 };
 
-export function ClientComponent({ categories, initialTasks, saveTask, toggleTaskStatus, togglePlayerInTask }: ClientComponentProps) {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+export function ClientComponent({ categories, saveTask, toggleTaskStatus, togglePlayerInTask }: ClientComponentProps) {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [activeCategory, setActiveCategory] = useState<Category | null>(null);
+  console.log(activeCategory);
   const [isLoading, setIsLoading] = useState(true);
   const [nickname, setNickname] = useState<string | null>(null);
   const [isAddUsernameModalOpen, setIsAddUsernameModalOpen] = useState(false);
   const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 
   useEffect(() => {
+    refreshTasks();
+  }, []);
+
+  useEffect(() => {
     const nickname = localStorage.getItem(LOCAL_STORAGE_KEYS.MINECRAFT_NICKNAME);
     setNickname(nickname);
     setIsAddUsernameModalOpen(!nickname);
-    setIsLoading(false);
   }, []);
 
   const handleAddUsernameSubmit = useCallback(async (nickname: string) => {
@@ -46,13 +52,16 @@ export function ClientComponent({ categories, initialTasks, saveTask, toggleTask
   }
 
   async function refreshTasks() {
+    setIsLoading(true);
     const newTasks = await tasksService.getAll();
     setTasks(newTasks);
+    setIsLoading(false);
   }
 
   async function handleAddTask(newTask: NewTask) {
     if (!nickname) return;
     setIsCreateTaskModalOpen(false);
+    setIsLoading(true);
     await saveTask({
       ...newTask,
       createdBy: nickname,
@@ -65,26 +74,34 @@ export function ClientComponent({ categories, initialTasks, saveTask, toggleTask
   }
 
   async function handleCheckClick(task: Task) {
+    setIsLoading(true);
     await toggleTaskStatus(task.id);
     await refreshTasks();
   }
 
   async function handleTogglePlayerInTask(task: Task) {
     if (!nickname) return;
+    setIsLoading(true);
     await togglePlayerInTask(nickname, task.id);
     await refreshTasks();
   }
 
-  const pendingTasks = tasks.filter((task) => !task.completed);
-  const completedTasks = tasks.filter((task) => task.completed);
-
-  if (isLoading) {
-    // TODO: adicionar componente Loader/Spinner
-    return null;
+  function handleChangeCategory(category: Category) {
+    setActiveCategory(category.id !== activeCategory?.id ? category : null);
   }
+
+  const pendingTasks = useMemo(() => (
+    tasks.filter((task) => !task.completed && (activeCategory ? task.categories.find((category) => category.id === activeCategory.id) : true))
+  ), [tasks, activeCategory]);
+
+  const completedTasks = useMemo(() => (
+    tasks.filter((task) => task.completed && (activeCategory ? task.categories.find((category) => category.id === activeCategory.id) : true))
+  ), [tasks, activeCategory]);
 
   return (
     <>
+      {isLoading && <Loader />}
+
       {isAddUsernameModalOpen && <AddUsernameModal onSubmit={handleAddUsernameSubmit} />}
 
       {isCreateTaskModalOpen && (
@@ -108,11 +125,17 @@ export function ClientComponent({ categories, initialTasks, saveTask, toggleTask
           <div>
             <strong className="text-2xl mb-5 block">Categorias</strong>
             <ul className="space-y-5">
-              {['Construção', 'Exploração', 'Automação'].map((categoryName) => (
-                <li key={categoryName}>
-                  <a className="font-vt323 text-2xl hover:underline underline-offset-2" href="#">
-                    # {categoryName}
-                  </a>
+              {categories.map((category) => (
+                <li key={category.id}>
+                  <button
+                    className={cn(
+                      'font-vt323 text-2xl hover:underline underline-offset-2 px-2',
+                      { 'bg-white text-black': activeCategory?.id === category.id }
+                    )}
+                    onClick={() => handleChangeCategory(category)}
+                  >
+                    # {category.name}
+                  </button>
                 </li>
               ))}
             </ul>
@@ -129,7 +152,7 @@ export function ClientComponent({ categories, initialTasks, saveTask, toggleTask
       <main className="h-full w-full bg-[#6aa84f] bg-[url('/minepattern.png')] overflow-y-auto">
         <div className="h-full p-14 flex flex-col">
           <button
-            className="font-vt323 w-fit bg-green-dark py-2 px-8 rounded-sm hover:bg-green-900 transition-colors"
+            className="font-vt323 text-2xl w-fit bg-green-dark py-2 px-6 rounded-sm hover:bg-green-900 transition-colors"
             onClick={handleOpenCreateTaskModal}
           >
             Nova tarefa
@@ -171,5 +194,16 @@ export function ClientComponent({ categories, initialTasks, saveTask, toggleTask
         </div>
       </main>
     </>
+  );
+}
+
+function Loader() {
+  return (
+    <div className="bg-green-light/80 backdrop-blur-sm absolute inset-0 z-50 flex items-center justify-center">
+      <Spinner
+        size="lg"
+        className="text-green-dark"
+      />
+    </div>
   );
 }

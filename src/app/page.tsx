@@ -47,16 +47,14 @@ async function togglePlayerInTask(playerNickname: string, taskId: number) {
   return TaskRepository.updatePlayers(task.id, [...taskPlayerIds, player.id]);
 }
 
-export const revalidate = 1;
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const tasks = await TaskRepository.getAll();
   const categories = await CategoryRepository.getAll();
 
   return (
     <div className="h-[100vh] text-white flex overflow-hidden">
       <ClientComponent
-        initialTasks={tasks}
         categories={categories}
         saveTask={saveTask}
         toggleTaskStatus={toggleTaskStatus}
