@@ -152,7 +152,7 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
       <main className="h-full w-full bg-[#6aa84f] bg-[url('/minepattern.png')] overflow-y-auto">
         <div className="h-full p-14 flex flex-col">
           <button
-            className="font-vt323 w-fit bg-green-dark py-2 px-8 rounded-sm hover:bg-green-900 transition-colors"
+            className="font-vt323 text-2xl w-fit bg-green-dark py-2 px-6 rounded-sm hover:bg-green-900 transition-colors"
             onClick={handleOpenCreateTaskModal}
           >
             Nova tarefa
