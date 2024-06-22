@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { AddUsernameModal } from '@/components/Modal/AddUsernameModal';
 import { TodoItem } from '@/components/TodoItem';
@@ -9,6 +9,7 @@ import { CreateTaskModal, type NewTask as NewTask } from '@/components/Modal/Cre
 import { Category } from '@prisma/client';
 import tasksService from '@/services/tasksService';
 import { Spinner } from '@/components/Spinner';
+import { cn } from '@/utils/cn';
 
 interface ClientComponentProps {
   categories: Category[];
@@ -23,6 +24,8 @@ const LOCAL_STORAGE_KEYS = {
 
 export function ClientComponent({ categories, saveTask, toggleTaskStatus, togglePlayerInTask }: ClientComponentProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [activeCategory, setActiveCategory] = useState<Category | null>(null);
+  console.log(activeCategory);
   const [isLoading, setIsLoading] = useState(true);
   const [nickname, setNickname] = useState<string | null>(null);
   const [isAddUsernameModalOpen, setIsAddUsernameModalOpen] = useState(false);
@@ -83,8 +86,17 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
     await refreshTasks();
   }
 
-  const pendingTasks = tasks.filter((task) => !task.completed);
-  const completedTasks = tasks.filter((task) => task.completed);
+  function handleChangeCategory(category: Category) {
+    setActiveCategory(category.id !== activeCategory?.id ? category : null);
+  }
+
+  const pendingTasks = useMemo(() => (
+    tasks.filter((task) => !task.completed && (activeCategory ? task.categories.find((category) => category.id === activeCategory.id) : true))
+  ), [tasks, activeCategory]);
+
+  const completedTasks = useMemo(() => (
+    tasks.filter((task) => task.completed && (activeCategory ? task.categories.find((category) => category.id === activeCategory.id) : true))
+  ), [tasks, activeCategory]);
 
   return (
     <>
@@ -113,11 +125,17 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
           <div>
             <strong className="text-2xl mb-5 block">Categorias</strong>
             <ul className="space-y-5">
-              {['Construção', 'Exploração', 'Automação'].map((categoryName) => (
-                <li key={categoryName}>
-                  <a className="font-vt323 text-2xl hover:underline underline-offset-2" href="#">
-                    # {categoryName}
-                  </a>
+              {categories.map((category) => (
+                <li key={category.id}>
+                  <button
+                    className={cn(
+                      'font-vt323 text-2xl hover:underline underline-offset-2 px-2',
+                      { 'bg-white text-black': activeCategory?.id === category.id }
+                    )}
+                    onClick={() => handleChangeCategory(category)}
+                  >
+                    # {category.name}
+                  </button>
                 </li>
               ))}
             </ul>
