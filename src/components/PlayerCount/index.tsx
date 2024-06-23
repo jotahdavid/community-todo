@@ -38,16 +38,23 @@ export function PlayerCount() {
   useEffect(() => {
     refreshServerStats();
 
+    const MINUTES_IN_MS = 1000 * 60;
+
     const handleVisibilityChange = () => {
       const timeDifference = (new Date().getTime() - lastFetchTime.current.getTime()) / 60 / 100;
-      if (document.hidden || timeDifference <= 5) return;
+      if (document.hidden || timeDifference <= 4) return;
       refreshServerStats();
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    const timeoutId = setTimeout(() => {
+      if (document.hidden) return;
+      refreshServerStats();
+    }, MINUTES_IN_MS * 8);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearTimeout(timeoutId);
     };
   }, []);
 
