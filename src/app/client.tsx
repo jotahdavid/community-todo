@@ -13,6 +13,7 @@ import { cn } from '@/utils/cn';
 import { RotateRightIcon } from '@/components/Icons/RotateRightIcon';
 import { DiscordIcon } from '@/components/Icons/DiscordIcon';
 import { GithubIcon } from '@/components/Icons/GithubIcon';
+import { PlayerCount } from '@/components/PlayerCount';
 
 interface ClientComponentProps {
   categories: Category[];
@@ -118,13 +119,24 @@ export function ClientComponent({ categories, saveTask, toggleTaskStatus, toggle
 
       <aside className="h-full bg-green-dark px-16 py-14 w-full max-w-[390px] flex flex-col justify-between overflow-y-auto">
         <header>
-          <h1 className="text-5xl mb-20 font-vt323 uppercase text-center">ServerdeMine</h1>
+          <h1 className="text-5xl mb-1 font-vt323 uppercase text-center">
+            ServerdeMine
+          </h1>
+          <strong className="block mb-5 text-center">IP: serverdemine.online</strong>
 
-          <div className="flex flex-col gap-y-5 mb-10 pb-10 border-b">
+          <div className="mb-5">
+            <PlayerCount />
+          </div>
+
+          <hr className="mb-5" />
+
+          <div className="flex flex-col gap-y-5 mb-5">
             <a className="text-2xl hover:underline underline-offset-2" href={process.env.NEXT_PUBLIC_DOC_URL} target="_blank">
               Tutoriais
             </a>
           </div>
+
+          <hr className="mb-5" />
 
           <div>
             <strong className="text-2xl mb-5 block">Categorias</strong>
