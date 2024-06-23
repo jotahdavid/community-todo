@@ -79,7 +79,7 @@ export function PlayerCount() {
           </span>
 
           <span className="group font-vt323 text-3xl bg-green-light py-1 px-5 rounded-sm relative">
-            {String(players.length).padStart(2, '0')}
+            {players.length !== 0 ? String(players.length).padStart(2, '0') : 0}
 
             <ul className="hidden group-hover:block absolute top-3/4 left-1/2 -translate-x-1/2 bg-white text-black px-4 rounded-sm max-h-[180px] overflow-y-auto">
               {players.map((player) => (
