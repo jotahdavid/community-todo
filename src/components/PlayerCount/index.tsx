@@ -26,7 +26,7 @@ export function PlayerCount() {
         return;
       }
 
-      setPlayers(serverStats.players.list);
+      setPlayers(serverStats.players.list ?? []);
     } catch {
       setHasError(true);
     } finally {
